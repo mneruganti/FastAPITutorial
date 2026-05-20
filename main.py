@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException
-# from pydantic import BaseModel
+from pydantic import BaseModel
 
 app = FastAPI()
 
-# e
-# class Item(BaseModel):
-    #text: str = None
-    #is_done: bool = False
+# pydantic extends the Item object so it becomes a more complex data structure
+# with more attributes - now we can make a to do list
+class Item(BaseModel):
+    text: str = None
+    is_done: bool = False
 
 items = []
 
@@ -16,16 +17,16 @@ def root():
 
 
  @app.post("/items")
- def create_item(item: str): 
+ def create_item(item: Item): 
      items.append(item)
      return items
 
-@app.get("/items")
+@app.get("/items", response_model=list[Item])
 def list_items(limit: int = 10): # int = 10 is the default (return 10 items from the list)
     return items[0:limit]
 
 
-@app.get("/items/{item_id}")
+@app.get("/items/{item_id}", response_model=Item)
 def get_item(item_id: int) -> str:
     
     if (item_id < len(items)):
